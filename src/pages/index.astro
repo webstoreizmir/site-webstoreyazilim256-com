@@ -1,0 +1,87 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import HeroSection from '../components/HeroSection.astro';
+import ProductSection from '../components/ProductSection.astro';
+import AboutSection from '../components/AboutSection.astro';
+import ProcessSection from '../components/ProcessSection.astro';
+import TestimonialsSection from '../components/TestimonialsSection.astro';
+import FAQSection from '../components/FAQSection.astro';
+import ContactSection from '../components/ContactSection.astro';
+import Footer from '../components/Footer.astro';
+
+// JSON verisini içe aktar (Veri bozuksa boş obje ata)
+import rawSiteConfig from '../data/site-config.json';
+const config = rawSiteConfig || {};
+
+// --- GÜVENLİK PROTOKOLÜ: OPTIONAL CHAINING ---
+// Gemini ne kadar saçmalarsa saçmalasın, burası patlamaz.
+
+// 1. Metadata
+const title = config?.metadata?.title || "Web Sitem";
+const description = config?.metadata?.description || "Açıklama yüklenemedi.";
+
+// 2. Renkler (HATANIN KAYNAĞI BURASIYDI)
+// Hem 'theme.primary' hem de 'theme.colors.primary' ihtimallerini kontrol ediyoruz.
+const theme = config?.theme || {};
+const primaryColor = theme?.primary || theme?.colors?.primary || "#2563eb"; 
+const secondaryColor = theme?.secondary || theme?.colors?.secondary || "#1e40af";
+
+// 3. Fontlar
+const headingFont = theme?.fonts?.heading || "Inter";
+const bodyFont = theme?.fonts?.body || "Inter";
+
+// 4. Görseller
+const heroKeyword = config?.images?.hero_keyword || "business";
+const aboutKeyword = config?.images?.about_keyword || "office";
+
+// 5. Bölüm Verileri
+// Her bir veri için '||' (veya) operatörü ile varsayılan boş içerik atıyoruz.
+const heroData = config?.content?.hero || { headline: title, subheadline: "", ctaButtonText: "İletişim" };
+const aboutData = config?.content?.about || { title: "Hakkımızda", description: "", stats: [] };
+const productData = config?.content?.products || [];
+const processData = config?.content?.process || [];
+const testimonialData = config?.content?.testimonials || [];
+const faqData = config?.content?.faq || [];
+const contactData = config?.content?.contact || { address: "", phone: "", email: "" };
+
+---
+
+<Layout 
+  title={title} 
+  description={description}
+  headingFont={headingFont} 
+  bodyFont={bodyFont}
+>
+  <Navbar title={title} />
+  
+  <HeroSection 
+    headline={heroData.headline}
+    subheadline={heroData.subheadline}
+    ctaButtonText={heroData.ctaButtonText}
+    imageKeyword={heroKeyword}
+  />
+  
+  <AboutSection 
+    title={aboutData.title}
+    description={aboutData.description}
+    stats={aboutData.stats}
+    imageKeyword={aboutKeyword}
+  />
+
+  {productData.length > 0 && <ProductSection products={productData} />}
+
+  <ProcessSection steps={processData} />
+  
+  <TestimonialsSection testimonials={testimonialData} />
+  
+  <FAQSection faqs={faqData} />
+  
+  <ContactSection contact={contactData} />
+  
+  <Footer 
+    title={title}
+    description={aboutData.description}
+    contact={contactData}
+  />
+</Layout>
